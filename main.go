@@ -1,78 +1,61 @@
 package main
 
-import "fmt"
-
-// Variables
-const conferenceTickets = 50
-
-var remainingTickets uint = 50
-var bookings []string // Slice to store bookings
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
-	// Conference details
-	conferenceName := "Go Conference"
+	// Variables
+	var conferenceName = "Go Conference"
+	var remainingTickets uint = 50
 
-	// Main program loop
-	for remainingTickets > 0 {
-		firstName, lastName, email, userTickets := getUserInput()
+	// Welcome message
+	fmt.Printf("\nWelcome to %v booking system!\n", conferenceName)
+	fmt.Printf("We have %d tickets available.\n", remainingTickets)
 
-		// Validate user input
-		isValid := validateInput(firstName, lastName, email, userTickets)
+	// Collect user information
+	fmt.Println("\nEnter your details to book tickets:")
+	var firstName, lastName string
+	var ticketsToBook uint
 
-		if isValid {
-			// Book tickets and print booking details
-			bookTickets(firstName, lastName, email, userTickets, conferenceName)
-
-			// Print all bookings
-			fmt.Printf("Current bookings: %v\n", bookings)
-		} else {
-			fmt.Println("Invalid input. Please try again.")
-		}
+	// Validate First Name
+	fmt.Print("First Name: ")
+	fmt.Scan(&firstName)
+	if strings.TrimSpace(firstName) == "" {
+		fmt.Println("First name cannot be empty!")
+		return
 	}
 
-	// End program when tickets are sold out
-	fmt.Println("Sorry, the conference is fully booked!")
-}
-
-// Function to greet users
-func greetUsers(conferenceName string) {
-	fmt.Printf("Welcome to %v booking application\n", conferenceName)
-	fmt.Printf("We have a total of %v tickets and %v are still available\n", conferenceTickets, remainingTickets)
-	fmt.Println("Get your tickets here to attend!")
-}
-
-// Function to get user input
-func getUserInput() (string, string, string, uint) {
-	var firstName, lastName, email string
-	var userTickets uint
-
-	fmt.Println("Enter your first name: ")
-	fmt.Scan(&firstName)
-
-	fmt.Println("Enter your last name: ")
+	// Validate Last Name
+	fmt.Print("Last Name: ")
 	fmt.Scan(&lastName)
+	if strings.TrimSpace(lastName) == "" {
+		fmt.Println("Last name cannot be empty!")
+		return
+	}
 
-	fmt.Println("Enter your email address: ")
-	fmt.Scan(&email)
+	// Validate Number of Tickets
+	fmt.Print("Tickets to Book: ")
+	_, err := fmt.Scan(&ticketsToBook)
+	if err != nil {
+		fmt.Println("Please enter a valid number for tickets.")
+		return
+	}
+	if ticketsToBook <= 0 {
+		fmt.Println("Invalid number of tickets. Please enter a positive number.")
+		return
+	}
 
-	fmt.Println("Enter number of tickets: ")
-	fmt.Scan(&userTickets)
+	// Tickets Validation
+	if ticketsToBook <= remainingTickets {
+		remainingTickets -= ticketsToBook
+		fmt.Printf("\nThank you, %s %s! Your %d tickets are booked. %d tickets remaining.\n",
+			firstName, lastName, ticketsToBook, remainingTickets)
+	} else {
+		fmt.Printf("\nSorry, only %d tickets are available.\n", remainingTickets)
+	}
 
-	return firstName, lastName, email, userTickets
-}
-
-// Function to validate user input
-func validateInput(firstName, lastName, email string, userTickets uint) bool {
-	isValidName := len(firstName) > 0 && len(lastName) > 0
-	isValidEmail := len(email) > 5
-	isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
-
-	return isValidName && isValidEmail && isValidTicketNumber
-}
-
-// Function to book tickets
-func bookTickets(firstName, lastName, email string, userTickets uint, conferenceName string) {
-
-	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
-	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+	// Goodbye message
+	fmt.Println("Thanks for using our booking system!")
 }
